@@ -41,11 +41,11 @@ class GameViewModel: ObservableObject {
         }
         
         // BubbleMovementTimer - moves bubbles around the screen, adjusting velocity in some cases. EF 1
-        bubbleMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { [weak self] _ in
-            // Ensure weak reference to self remains.
-            guard let self = self else { return }
-            self.moveBubblesAndUpdateVelocity();
-        }
+//        bubbleMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { [weak self] _ in
+//            // Ensure weak reference to self remains.
+//            guard let self = self else { return }
+//            self.moveBubblesAndUpdateVelocity();
+//        }
     }
     
     func stopTimers() {
@@ -145,10 +145,13 @@ class GameViewModel: ObservableObject {
         // Generate a random number of bubbles within the remaining limit or limited by the number of free positions, whichever is least.
         var numberToGenerate = Int.random(in: 0..<(maxNumberOfBubbles - currentNumberOfBubbles));
         // TODO: Consider moving this further up the chain so we don't need to generate every second.
-        var poissonDiskPositions = generatePoissonDiskSamples(numberToGenerate, UIScreen.main.bounds.width, UIScreen.main.bounds.height, GameHelper.BUBBLE_SIZE / 2);
+        let screenWidth = UIScreen.main.bounds.width;
+        let screenHeight = UIScreen.main.bounds.height;
+        let minimumDistance = max(GameHelper.BUBBLE_SIZE, (screenWidth * screenHeight) / CGFloat(maxNumberOfBubbles * 150));
+        var poissonDiskPositions = generatePoissonDiskSamples(numberToGenerate, screenWidth, screenHeight, minimumDistance);
         numberToGenerate = min(numberToGenerate, poissonDiskPositions.count);
         
-        for _ in 0...numberToGenerate {
+        for _ in 0..<numberToGenerate {
             let randomPosition = poissonDiskPositions.randomElement();
             bubbles.append(generateRandomBubble(position: randomPosition!));
             poissonDiskPositions.removeAll(where: { $0 == randomPosition });
@@ -170,7 +173,7 @@ class GameViewModel: ObservableObject {
                 for _ in 0..<15 {
                     let candidate = GameHelper.randomPointAround(activePoint, minimumDistance: distance);
                     
-                    if (!actualPoints.contains(where: { GameHelper.distance($0, candidate) < distance }) &&
+                    if (!actualPoints.contains(where: { GameHelper.distance($0, candidate) < distance }) && !bubbles.contains(where: { GameHelper.distance($0.position, candidate) < distance }) &&
                         GameHelper.isValidPoint(candidate, inScreenWidth: screenWidth, inScreenHeight: screenHeight)) {
                         
                         actualPoints.append(candidate);
@@ -216,14 +219,6 @@ class GameViewModel: ObservableObject {
     //
     private func generateRandomBubble(position: CGPoint) -> Bubble {
         // TODO: Bubbles cannot overlap each other.
-        var randomPosition: CGPoint;
-        repeat {
-            randomPosition = CGPoint(
-                x: CGFloat.random(in: 0..<(UIScreen.main.bounds.width - GameHelper.BUBBLE_SIZE)),
-                y: CGFloat.random(in: 0..<(UIScreen.main.bounds.height - GameHelper.BUBBLE_SIZE))
-            );
-        } while (doesCollide(x: randomPosition.x, y: randomPosition.y));
-        
         let randomVelocity: CGPoint = CGPoint(
             x: CGFloat.random(in: -3...3),
             y: CGFloat.random(in: -3...3)
@@ -239,7 +234,7 @@ class GameViewModel: ObservableObject {
         let weightedBubbleTypes = bubbleTypes.flatMap { bubble in Array(repeating: bubble.0, count: bubble.1) };
         let randomBubbleType = weightedBubbleTypes.randomElement() ?? .Red;
         
-        let bubble = Bubble(type: randomBubbleType, position: randomPosition, velocity: randomVelocity);
+        let bubble = Bubble(type: randomBubbleType, position: position, velocity: randomVelocity);
         return bubble;
     }
 }

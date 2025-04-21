@@ -15,17 +15,7 @@ struct GameView: View {
         ZStack {
             // Bubbles (Layer 1)
             ForEach(viewModel.bubbles) { bubble in
-                    Circle()
-                        .fill(bubble.colour)
-                        .frame(
-                            width: GameHelper.BUBBLE_SIZE,
-                            height: GameHelper.BUBBLE_SIZE)
-                        .position(
-                            x: bubble.position.x,
-                            y: bubble.position.y)
-                        .onTapGesture {
-                            viewModel.popBubble(bubble)
-                }
+                BubbleView(bubble: bubble, gameViewModel: viewModel)
             }
             
             // Game Info (Layer 2)
@@ -37,20 +27,6 @@ struct GameView: View {
                 Text("Player name: \(gameSettings.playerName)")
                 Text("Timer: \(gameSettings.gameTimer)")
                 Text("Max bubbles: \(gameSettings.maxBubblesOnScreen)")
-//                Button(action: {
-//                    withAnimation {
-//                        viewModel.generateBubbles(gameSettings.maxBubblesOnScreen)
-//                    }
-//                }) {
-//                    Text("Spawn Bubbles")
-//                }.buttonStyle(.borderedProminent)
-//                Button(action: {
-//                    withAnimation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0)) {
-//                        viewModel.removeRandomBubbles()
-//                    }
-//                }) {
-//                    Text("Remove Bubbles")
-//                }.buttonStyle(.borderedProminent)
                 
                 Spacer()
             }

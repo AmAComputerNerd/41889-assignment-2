@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 class GameViewModel: ObservableObject {
     @Published var score: Int = 0;
@@ -136,8 +137,10 @@ class GameViewModel: ObservableObject {
             return;
         }
         
-        let randomNumber = Int.random(in: 1...3);
-        bubbles.removeFirst(randomNumber);
+        withAnimation {
+            let randomNumber = Int.random(in: 1...3);
+            bubbles.removeFirst(randomNumber);
+        }
     }
     
     //

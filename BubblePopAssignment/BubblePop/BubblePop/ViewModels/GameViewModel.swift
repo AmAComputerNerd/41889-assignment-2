@@ -20,6 +20,7 @@ class GameViewModel: ObservableObject {
     
     func startTimers(gameSettings: GameSettingsViewModel) {
         timerDuration = gameSettings.gameTimer;
+        
         // GameTimer - countdown before game ends.
         gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             // Ensure weak reference to self remains.
@@ -34,28 +35,20 @@ class GameViewModel: ObservableObject {
         bubbleRefreshTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             // Ensure weak reference to self remains.
             guard let self = self else { return }
-            if (self.bubbles.count >= Int(Double(gameSettings.maxBubblesOnScreen) * 0.66)) {
+            if (self.bubbles.count >= Int(Double(gameSettings.maxBubblesOnScreen) * 0.33)) {
                 self.removeRandomBubbles();
             }
             self.generateBubbles(gameSettings.maxBubblesOnScreen);
         }
-        
-        // BubbleMovementTimer - moves bubbles around the screen, adjusting velocity in some cases. EF 1
-//        bubbleMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { [weak self] _ in
-//            // Ensure weak reference to self remains.
-//            guard let self = self else { return }
-//            self.moveBubblesAndUpdateVelocity();
-//        }
     }
     
     func stopTimers() {
         gameTimer?.invalidate();
         bubbleRefreshTimer?.invalidate();
-        bubbleMovementTimer?.invalidate();
     }
     
     func clearData() {
-        // TODO: Temporary solution to ensure score is cleared when pressing Back on the high score page.
+        // TODO: Temporary solution to ensure score is cleared when pressing Back on the high score page. Should be replaced with new Navigation tree when NavigationManager is implemented.
         score = 0;
         bubbles = [];
         isGameOver = false;
@@ -67,74 +60,6 @@ class GameViewModel: ObservableObject {
         isGameOver = true;
     }
     
-    private func moveBubblesAndUpdateVelocity() {
-        // Verify bubble will not collide with another bubble or the wall this turn. If so, reverse its velocity to make it "bounce" off this obstacle.
-        checkForCollisions();
-        
-        // Update position based on velocity, with a 10% chance to slightly change the velocity of the bubble.
-        for i in 0..<bubbles.count {
-            bubbles[i].position = CGPoint(
-                x: bubbles[i].position.x + bubbles[i].velocity.x,
-                y: bubbles[i].position.y + bubbles[i].velocity.y
-            );
-            
-            let chanceToUpdateVelocity = Int.random(in: 0..<100);
-            if (chanceToUpdateVelocity < 10) {
-                let velocityXChange = CGFloat.random(in: -0.5...0.5);
-                let velocityYChange = CGFloat.random(in: -0.5...0.5);
-                bubbles[i].velocity = CGPoint(
-                    x: bubbles[i].velocity.x + velocityXChange,
-                    y: bubbles[i].velocity.y + velocityYChange
-                );
-            }
-        }
-    }
-    
-    private func checkForCollisions() {
-        // Check every bubble's velocity this turn to see if it collides, and reverse it's velocity if it does.
-        for i in 0..<bubbles.count {
-            let newPosX = bubbles[i].position.x + bubbles[i].velocity.x;
-            let newPosY = bubbles[i].position.y + bubbles[i].velocity.y;
-            for j in i..<bubbles.count {
-                if (doesOverlapBubble(x: newPosX, y: newPosY, bubble: bubbles[j]) ||
-                    doesOverlapBoundary(x: newPosX, y: newPosY)) {
-                    // Overlap will occur this turn, invert velocity instead.
-                    bubbles[i].velocity = CGPoint(
-                        x: -bubbles[i].velocity.x,
-                        y: -bubbles[i].velocity.y
-                    );
-                    break;
-                }
-            }
-        }
-    }
-    
-    private func doesCollide(x: Double, y: Double) -> Bool {
-        // Checks that no bubble overlaps with this new position we're generating.
-        for bubble in bubbles {
-            if (doesOverlapBubble(x: x, y: y, bubble: bubble)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private func doesOverlapBubble(x: Double, y: Double, bubble: Bubble) -> Bool {
-        let doesOverlapX = (x + GameHelper.BUBBLE_SIZE > bubble.position.x) && (x < bubble.position.x + GameHelper.BUBBLE_SIZE);
-        let doesOverlapY = (y + GameHelper.BUBBLE_SIZE > bubble.position.y) && (y < bubble.position.y + GameHelper.BUBBLE_SIZE);
-        
-        return doesOverlapX || doesOverlapY;
-    }
-    
-    private func doesOverlapBoundary(x: Double, y: Double) -> Bool {
-        let screenWidth = UIScreen.main.bounds.width;
-        let screenHeight = UIScreen.main.bounds.height;
-        let doesOverlapX = (x < GameHelper.BUBBLE_SIZE) || (x + GameHelper.BUBBLE_SIZE > screenWidth);
-        let doesOverlapY = (y < GameHelper.BUBBLE_SIZE) || (y + GameHelper.BUBBLE_SIZE > screenHeight);
-        
-        return doesOverlapX || doesOverlapY;
-    }
-    
     private func generateBubbles(_ maxNumberOfBubbles: Int) {
         // Verify bubble cap has not been reached.
         let currentNumberOfBubbles = bubbles.count;
@@ -143,11 +68,12 @@ class GameViewModel: ObservableObject {
         }
         
         // Generate a random number of bubbles within the remaining limit or limited by the number of free positions, whichever is least.
-        var numberToGenerate = Int.random(in: 0..<(maxNumberOfBubbles - currentNumberOfBubbles));
+        var numberToGenerate = Int.random(in: 1...min(5, maxNumberOfBubbles - currentNumberOfBubbles));
+        
         // TODO: Consider moving this further up the chain so we don't need to generate every second.
         let screenWidth = UIScreen.main.bounds.width;
         let screenHeight = UIScreen.main.bounds.height;
-        let minimumDistance = max(GameHelper.BUBBLE_SIZE, (screenWidth * screenHeight) / CGFloat(maxNumberOfBubbles * 150));
+        let minimumDistance = max(GameHelper.BUBBLE_SIZE, (screenWidth * screenHeight) / CGFloat(maxNumberOfBubbles * 200));
         var poissonDiskPositions = generatePoissonDiskSamples(numberToGenerate, screenWidth, screenHeight, minimumDistance);
         numberToGenerate = min(numberToGenerate, poissonDiskPositions.count);
         
@@ -210,7 +136,7 @@ class GameViewModel: ObservableObject {
             return;
         }
         
-        let randomNumber = Int.random(in: 0..<(bubbles.count / 3));
+        let randomNumber = Int.random(in: 1...3);
         bubbles.removeFirst(randomNumber);
     }
     
@@ -218,7 +144,6 @@ class GameViewModel: ObservableObject {
     // TODO: FIX THIS
     //
     private func generateRandomBubble(position: CGPoint) -> Bubble {
-        // TODO: Bubbles cannot overlap each other.
         let randomVelocity: CGPoint = CGPoint(
             x: CGFloat.random(in: -3...3),
             y: CGFloat.random(in: -3...3)

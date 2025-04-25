@@ -19,7 +19,7 @@ class GameViewModel: ObservableObject {
     private var bubbleRefreshTimer: Timer?;
     private var bubbleMovementTimer: Timer?;
     
-    func startTimers(gameSettings: GameSettingsViewModel) {
+    func startTimers(_ gameSettings: GameSettingsViewModel) {
         timerDuration = gameSettings.gameTimer;
         
         // GameTimer - countdown before game ends.
@@ -56,6 +56,18 @@ class GameViewModel: ObservableObject {
         lastBubbleTypePopped = nil;
     }
     
+    func popBubble(_ bubbleToPop: Bubble) {
+        var score = Double(bubbleToPop.score);
+        if lastBubbleTypePopped == bubbleToPop.type {
+            // Apply score multiplier for one or more bubbles of the same colour popped in a row.
+            score *= 1.5;
+        }
+        
+        self.score += Int(score);
+        lastBubbleTypePopped = bubbleToPop.type;
+        bubbles.removeAll { $0 == bubbleToPop };
+    }
+    
     private func endGame() {
         stopTimers();
         isGameOver = true;
@@ -75,6 +87,7 @@ class GameViewModel: ObservableObject {
         let screenWidth = UIScreen.main.bounds.width;
         let screenHeight = UIScreen.main.bounds.height;
         let minimumDistance = max(GameHelper.BUBBLE_SIZE, (screenWidth * screenHeight) / CGFloat(maxNumberOfBubbles * 200));
+        
         var poissonDiskPositions = generatePoissonDiskSamples(numberToGenerate, screenWidth, screenHeight, minimumDistance);
         numberToGenerate = min(numberToGenerate, poissonDiskPositions.count);
         
@@ -119,18 +132,6 @@ class GameViewModel: ObservableObject {
         return actualPoints;
     }
     
-    func popBubble(_ bubbleToPop: Bubble) {
-        var score = bubbleToPop.score;
-        if lastBubbleTypePopped == bubbleToPop.type {
-            // Apply score multiplier for one or more bubbles of the same colour popped in a row.
-            score *= 2;
-        }
-        
-        self.score += score;
-        lastBubbleTypePopped = bubbleToPop.type;
-        bubbles.removeAll { $0 == bubbleToPop };
-    }
-    
     private func removeRandomBubbles() {
         // Remove a random number of bubbles, under the condition the number of bubbles on-screen is more than 3.
         guard (bubbles.count >= 3) else {
@@ -143,10 +144,8 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    //
-    // TODO: FIX THIS
-    //
     private func generateRandomBubble(position: CGPoint) -> Bubble {
+        // Generate a bubble with random velocity and type.
         let randomVelocity: CGPoint = CGPoint(
             x: CGFloat.random(in: -3...3),
             y: CGFloat.random(in: -3...3)

@@ -39,7 +39,7 @@ struct GameView: View {
             .hidden()
         }
         .onAppear {
-            viewModel.startTimers(gameSettings: gameSettings);
+            viewModel.startTimers(gameSettings);
         }
         .onDisappear {
             viewModel.stopTimers();

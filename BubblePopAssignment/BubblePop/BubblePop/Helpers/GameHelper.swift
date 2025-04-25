@@ -9,11 +9,11 @@ import Foundation
 
 class GameHelper {
     // Static variables
-    static let BUBBLE_SIZE: CGFloat = 50;
+    static let BUBBLE_SIZE: CGFloat = 70;
     
     // Poisson Disk Sampling functions
     static func randomPointAround(_ point: CGPoint, minimumDistance: CGFloat) -> CGPoint {
-        let radius = CGFloat.random(in: minimumDistance...(2 * minimumDistance));
+        let radius = CGFloat.random(in: minimumDistance...(3 * minimumDistance));
         let angle = CGFloat.random(in: 0...(2 * .pi));
         return CGPoint(
             x: point.x + radius * cos(angle),
@@ -22,7 +22,8 @@ class GameHelper {
     }
     
     static func isValidPoint(_ point: CGPoint, inScreenWidth width: CGFloat, inScreenHeight height: CGFloat) -> Bool {
-        return point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height;
+        let radius = BUBBLE_SIZE;
+        return point.x >= radius && point.x <= width - radius && point.y >= radius && point.y <= height - radius * 2;
     }
     
     static func distance(_ p1: CGPoint, _ p2: CGPoint) -> CGFloat {

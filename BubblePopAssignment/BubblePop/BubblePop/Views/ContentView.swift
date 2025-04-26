@@ -15,23 +15,13 @@ struct ContentView: View {
                 
                 Spacer()
                 
-//                NavigationLink(destination: GameSettingsView()) {
-//                    
-//                    Button("New Game") {}
-//                        .buttonStyle(.borderedProminent)
-//                    
-//                }
-                
                 StyledNavigationLink(destination: GameSettingsView(), label: "New Game")
                 
-//                NavigationLink(destination: HighScoreView()) {
-//                    
-//                    Button("High Score") {}
-//                        .buttonStyle(.borderedProminent)
-//                    
-//                }
-                
                 StyledNavigationLink(destination: HighScoreView(), label: "High Score")
+                
+                Button("DEBUG: Clear leaderboard") {
+                    GameHelper.clearLeaderboard()
+                }
                 
                 Spacer();
             }

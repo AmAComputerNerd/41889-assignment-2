@@ -19,6 +19,7 @@ struct GameSettingsView: View {
                 .padding()
             
             Text("Timer duration: \(Int(viewModel.gameTimer)) seconds")
+            // TODO: No more Stepper, go back to Slider and do it right this time.
             Stepper("", value: $viewModel.gameTimer, in: 30...240)
             
             Text("Max bubble count: \(Int(viewModel.maxBubblesOnScreen)) bubbles")

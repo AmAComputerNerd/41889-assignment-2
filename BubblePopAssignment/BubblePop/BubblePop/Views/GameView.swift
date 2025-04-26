@@ -32,8 +32,9 @@ struct GameView: View {
             }
             // TODO: Fix warning.
             NavigationLink(
-                destination: GameEndView(score: viewModel.score),
-                isActive: $viewModel.isGameOver) {
+                destination: GameEndView(playerName: gameSettings.playerName, score: viewModel.score),
+                isActive: $viewModel.isGameOver
+            ) {
                 EmptyView()
             }
             .hidden()

@@ -24,7 +24,7 @@ struct Bubble: Identifiable, Equatable {
         // TODO: Fix this ugly code
         switch(type) {
         case .Red: self.colour = .red; self.score = 1;
-        case .Pink: self.colour = .pink; self.score = 2;
+        case .Pink: self.colour = .purple; self.score = 2;
         case .Green: self.colour = .green; self.score = 5;
         case .Blue: self.colour = .blue; self.score = 8;
         case .Black: self.colour = .black; self.score = 10;

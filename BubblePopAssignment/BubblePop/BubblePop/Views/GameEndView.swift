@@ -8,14 +8,20 @@
 import SwiftUI
 
 struct GameEndView: View {
-    @State var score: Int;
+    @StateObject var viewModel: GameEndViewModel;
+    
+    init(playerName: String, score: Int) {
+        self._viewModel = StateObject(wrappedValue: GameEndViewModel(playerName, score));
+    }
     
     var body: some View {
         Text("Game Over!")
-        Text("Your final score was: \r")
+        Text("Your high score is: \(viewModel.highlightedLeaderboardEntry?.score ?? -1)")
+        Text("Your score: \(viewModel.score)")
+        Text("There are \(viewModel.leaderboard.count) leaderboard entries.")
     }
 }
 
 #Preview {
-    GameEndView(score: 0)
+    GameEndView(playerName: "Preview", score: 69)
 }

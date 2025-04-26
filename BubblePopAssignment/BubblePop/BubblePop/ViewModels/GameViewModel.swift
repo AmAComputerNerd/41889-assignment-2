@@ -28,7 +28,7 @@ class GameViewModel: ObservableObject {
             guard let self = self else { return }
             self.timerDuration -= 1;
             if self.timerDuration <= 0 {
-                self.endGame();
+                self.endGame(gameSettings.playerName);
             }
         }
         
@@ -68,8 +68,9 @@ class GameViewModel: ObservableObject {
         bubbles.removeAll { $0 == bubbleToPop };
     }
     
-    private func endGame() {
+    private func endGame(_ playerName: String) {
         stopTimers();
+        _ = GameHelper.updatePlayerLeaderboardEntry(playerName: playerName, score: self.score)
         isGameOver = true;
     }
     

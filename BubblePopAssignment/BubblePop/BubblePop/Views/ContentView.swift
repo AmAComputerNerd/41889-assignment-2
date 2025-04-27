@@ -8,25 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var gameSettings: GameSettingsViewModel;
+    @EnvironmentObject private var viewModel: NavigationManager;
+    
     var body: some View {
-        // TODO: NavigationController view.
-        NavigationStack {
-            VStack {
-                Label("Bubble Pop", systemImage: "").foregroundStyle(.mint).font(.largeTitle)
-                
-                Spacer()
-                
-                StyledNavigationLink(destination: GameSettingsView(), label: "New Game")
-                
-                StyledNavigationLink(destination: HighScoreView(), label: "High Score")
-                
-                Spacer();
-            }
-            .padding()
-        }
+        viewModel.currentView
+            .environmentObject(gameSettings)
+            .environmentObject(viewModel)
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(GameSettingsViewModel())
+        .environmentObject(NavigationManager())
 }

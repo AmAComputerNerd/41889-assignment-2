@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BubbleView: View {
     @State private var isPopped: Bool = false;
-    @State var bubble: Bubble;
+    @Binding var bubble: Bubble;
     @StateObject var gameViewModel: GameViewModel;
     
     var body: some View {
@@ -79,5 +79,5 @@ struct BubbleView: View {
 }
 
 #Preview {
-    BubbleView(bubble: Bubble(type: .Red, position: CGPoint.zero, velocity: CGPoint.zero), gameViewModel: GameViewModel());
+    BubbleView(bubble: .constant(Bubble(type: .Red, position: CGPoint.zero, velocity: CGPoint.zero)), gameViewModel: GameViewModel());
 }

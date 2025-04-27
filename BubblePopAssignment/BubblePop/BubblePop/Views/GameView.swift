@@ -15,8 +15,8 @@ struct GameView: View {
     var body: some View {
         ZStack {
             // Bubbles (Layer 1)
-            ForEach(viewModel.bubbles) { bubble in
-                BubbleView(bubble: bubble, gameViewModel: viewModel)
+            ForEach($viewModel.bubbles) { $bubble in
+                BubbleView(bubble: $bubble, gameViewModel: viewModel)
             }
             
             // Game Info (Layer 2)

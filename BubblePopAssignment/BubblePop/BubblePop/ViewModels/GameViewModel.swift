@@ -41,15 +41,24 @@ class GameViewModel: ObservableObject {
             }
             self.generateBubbles(gameSettings.maxBubblesOnScreen);
         }
+        
+        // BubbleMovementTimer - moves bubbles around the screen, adjusting velocity in some cases. EF 1
+        bubbleMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { [weak self] _ in
+            // Ensure weak reference to self remains.
+            guard let self = self else { return };
+            withAnimation {
+                self.moveBubblesAndUpdateVelocity(gameSettings.gameTimer);
+            }
+        }
     }
     
     func stopTimers() {
         gameTimer?.invalidate();
         bubbleRefreshTimer?.invalidate();
+        bubbleMovementTimer?.invalidate();
     }
     
     func clearData() {
-        // TODO: Temporary solution to ensure score is cleared when pressing Back on the high score page. Should be replaced with new Navigation tree when NavigationManager is implemented.
         score = 0;
         bubbles = [];
         isGameOver = false;
@@ -74,6 +83,65 @@ class GameViewModel: ObservableObject {
         isGameOver = true;
     }
     
+    private func moveBubblesAndUpdateVelocity(_ totalTimerLength: Int) {
+        for i in 0..<bubbles.count {
+            // Calculate true velocity
+            let bubble = bubbles[i];
+            let timeRatio = 1 + ((CGFloat(totalTimerLength) - CGFloat(timerDuration)) / CGFloat(totalTimerLength));
+            let trueVelocity = CGPoint(
+                x: bubble.velocity.x * timeRatio,
+                y: bubble.velocity.y * timeRatio
+            );
+            
+            // Update position / reverse velocity if new position would result in overlap.
+            if (!checkBubbleOverlap(bubble, trueVelocity)) {
+                bubbles[i].position = CGPoint(
+                    x: bubble.position.x + trueVelocity.x,
+                    y: bubble.position.y + trueVelocity.y
+                );
+            } else {
+                bubbles[i].velocity = CGPoint(
+                    x: -bubble.velocity.x,
+                    y: -bubble.velocity.y
+                );
+            }
+            
+            // Roll chance to update velocity.
+            let chanceToUpdateVelocity = Int.random(in: 0..<100);
+            if chanceToUpdateVelocity < 10 {
+                let velocityXChange = CGFloat.random(in: -0.5...0.5);
+                let velocityYChange = CGFloat.random(in: -0.5...0.5);
+                bubbles[i].velocity = CGPoint(
+                    x: bubbles[i].velocity.x + velocityXChange,
+                    y: bubbles[i].velocity.y + velocityYChange
+                );
+            }
+        }
+        
+        bubbles.removeAll(where: { checkBubbleOutOfBounds($0) })
+    }
+    
+    private func checkBubbleOverlap(_ bubble: Bubble, _ velocity: CGPoint) -> Bool {
+        let newBubblePosition = CGPoint(
+            x: bubble.position.x + velocity.x,
+            y: bubble.position.y + velocity.y
+        );
+        
+        let bubblesWithinRange = bubbles.filter({ $0.id != bubble.id && GameHelper.distance(newBubblePosition, $0.position) < GameHelper.BUBBLE_SIZE });
+        return !bubblesWithinRange.isEmpty;
+    }
+    
+    private func checkBubbleOutOfBounds(_ bubble: Bubble) -> Bool {
+        let bubbleRadius = GameHelper.BUBBLE_SIZE / 2;
+        let screenWidth = UIScreen.main.bounds.width;
+        let screenHeight = UIScreen.main.bounds.height;
+        
+        return bubble.position.x + bubbleRadius < 0 ||
+                bubble.position.x - bubbleRadius > screenWidth ||
+                bubble.position.y + bubbleRadius < 0 ||
+                bubble.position.y - bubbleRadius > screenHeight;
+    }
+    
     private func generateBubbles(_ maxNumberOfBubbles: Int) {
         // Verify bubble cap has not been reached.
         let currentNumberOfBubbles = bubbles.count;
@@ -82,7 +150,7 @@ class GameViewModel: ObservableObject {
         }
         
         // Generate a random number of bubbles within the remaining limit or limited by the number of free positions, whichever is least.
-        var numberToGenerate = Int.random(in: 1...min(5, maxNumberOfBubbles - currentNumberOfBubbles));
+        var numberToGenerate = Int.random(in: 1...(maxNumberOfBubbles - currentNumberOfBubbles));
         
         // TODO: Consider moving this further up the chain so we don't need to generate every second.
         let screenWidth = UIScreen.main.bounds.width;
@@ -148,8 +216,8 @@ class GameViewModel: ObservableObject {
     private func generateRandomBubble(position: CGPoint) -> Bubble {
         // Generate a bubble with random velocity and type.
         let randomVelocity: CGPoint = CGPoint(
-            x: CGFloat.random(in: -3...3),
-            y: CGFloat.random(in: -3...3)
+            x: CGFloat.random(in: -2...2),
+            y: CGFloat.random(in: -2...2)
         );
         
         let bubbleTypes = [

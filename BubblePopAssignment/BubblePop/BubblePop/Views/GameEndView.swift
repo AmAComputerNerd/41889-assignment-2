@@ -17,24 +17,27 @@ struct GameEndView: View {
     }
     
     var body: some View {
-        Text("Game Over!")
-            .foregroundStyle(.mint)
-            .font(.largeTitle)
-        if viewModel.isHighScore {
-            Text("New personal high score!")
-                .font(.headline)
-                .foregroundStyle(.green)
+        VStack {
+            Text("Game Over!")
+                .foregroundStyle(.mint)
+                .font(.largeTitle)
+            if viewModel.isHighScore {
+                Text("New personal high score!")
+                    .font(.headline)
+                    .foregroundStyle(.green)
+            }
+            Text("Your score: \(viewModel.score)")
+            Text("Your high score: \(viewModel.highlightedLeaderboardEntry?.score ?? -1)")
+            
+            LeaderboardView(leaderboardEntries: viewModel.leaderboard)
+            
+            Button("Continue") {
+                gameSettings.resetSettings();
+                navigationManager.navigate(to: HomeView.self, supportsNavigation: true)
+            }
+            .buttonStyle(.borderedProminent)
         }
-        Text("Your score: \(viewModel.score)")
-        Text("Your high score: \(viewModel.highlightedLeaderboardEntry?.score ?? -1)")
-        
-        LeaderboardView(leaderboardEntries: viewModel.leaderboard)
-        
-        Button("Continue") {
-            gameSettings.resetSettings();
-            navigationManager.navigate(to: HomeView.self, supportsNavigation: true)
-        }
-        .buttonStyle(.borderedProminent)
+        .padding()
     }
 }
 

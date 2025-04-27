@@ -25,7 +25,6 @@ struct BubbleView: View {
     }
     
     var body: some View {
-        // TODO: Investigate whether it is possible to move position and frame code outside of this component or generally apply it to all elements.
         Circle()
             .fill(
                 RadialGradient(

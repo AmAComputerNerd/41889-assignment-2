@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct GameSettingsView: View {
-    @EnvironmentObject var navigationManager: NavigationManager;
-    @EnvironmentObject var viewModel: GameSettingsViewModel;
+    @EnvironmentObject private var navigationManager: NavigationManager;
+    @EnvironmentObject private var viewModel: GameSettingsViewModel;
     
     var body: some View {
         VStack {
+            Text("Game Settings")
+                .foregroundStyle(.mint)
+                .font(.largeTitle)
+            Spacer()
             Text("Enter your name:");
             TextField("", text: $viewModel.playerName)
                 .textFieldStyle(.roundedBorder)
@@ -29,6 +33,7 @@ struct GameSettingsView: View {
                 navigationManager.navigate(to: GameView.self);
             }
             .buttonStyle(.borderedProminent)
+            Spacer()
         }
         .padding()
     }

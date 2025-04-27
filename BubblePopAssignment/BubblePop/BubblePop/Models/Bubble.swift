@@ -11,13 +11,15 @@ import SwiftUICore
 struct Bubble: Identifiable, Equatable {    
     let id = UUID();
     var type: BubbleTypeEnum;
+    var ability: BubbleAbilityEnum;
     var colour: Color;
     var score: Int;
     var position: CGPoint;
     var velocity: CGPoint;
     
-    init(type: BubbleTypeEnum, position: CGPoint, velocity: CGPoint) {
+    init(type: BubbleTypeEnum, ability: BubbleAbilityEnum, position: CGPoint, velocity: CGPoint) {
         self.type = type;
+        self.ability = ability;
         self.position = position;
         self.velocity = velocity;
         

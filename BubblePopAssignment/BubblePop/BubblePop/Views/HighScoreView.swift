@@ -11,6 +11,9 @@ struct HighScoreView: View {
     @StateObject var viewModel: HighScoreViewModel = HighScoreViewModel();
     
     var body: some View {
+        Text("Leaderboard")
+            .foregroundStyle(.mint)
+            .font(.largeTitle)
         HStack {
             Button("Refresh leaderboard") {
                 viewModel.refreshLeaderboard();

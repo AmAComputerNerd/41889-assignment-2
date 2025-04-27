@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Represents a game result saved into the player leaderboard.
 struct PlayerLeaderboardEntry: Identifiable, Codable, Equatable {
     var id = UUID();
     var playerName: String;

@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GameView: View {
-    @EnvironmentObject var navigationManager: NavigationManager
-    @EnvironmentObject var gameSettings: GameSettingsViewModel
+    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var gameSettings: GameSettingsViewModel
     @StateObject var viewModel: GameViewModel = GameViewModel();
     
     var body: some View {
@@ -21,7 +21,8 @@ struct GameView: View {
             
             // Game Info (Layer 2)
             VStack {
-                Text("Score: \(viewModel.score) | Time left: \(viewModel.timerDuration)")
+                Text("Time left: \(viewModel.timerDuration)")
+                Text("Score: \(viewModel.score) | High score to beat: \(viewModel.highestScore)")
                 Spacer()
             }
         }

@@ -82,7 +82,8 @@ class GameViewModel: ObservableObject {
     }
     
     func popBubble(_ bubbleToPop: Bubble, isBeingPoppedByAbility: Bool = false) {
-        if !isBeingPoppedByAbility {
+        if !isBeingPoppedByAbility && bubbleToPop.ability != BubbleAbilityEnum.Mimic { // Mimic handled elsewhere
+            // Don't apply abilities for bubbles which were popped by another ability.
             applyBubbleAbility(bubbleToPop);
         }
         
@@ -100,6 +101,7 @@ class GameViewModel: ObservableObject {
     private func applyBubbleAbility(_ bubble: Bubble) {
         let ability = bubble.ability;
         if ability == BubbleAbilityEnum.Bomb {
+            // Bomb: Pop all bubbles in a radius of BUBBLE_SIZE * 1.5 around this bubble.
             let explosionRadius: CGFloat = GameHelper.BUBBLE_SIZE * 1.5;
             let bubblesInRange = bubbles.filter {
                 $0.id != bubble.id &&
@@ -107,11 +109,14 @@ class GameViewModel: ObservableObject {
             };
             bubblesInRange.forEach { popBubble($0, isBeingPoppedByAbility: true) };
         } else if ability == BubbleAbilityEnum.Mimic {
+            // Mimic: Changes colour every 0.5s.
             let indexOfBubble = bubbles.firstIndex(of: bubble)!;
-            // This is a dirty way of doing this, but reduces duplicated code.
             let tempBubble = generateRandomBubble(position: CGPoint.zero);
+            bubbles[indexOfBubble].type = tempBubble.type;
             bubbles[indexOfBubble].colour = tempBubble.colour;
+            bubbles[indexOfBubble].score = tempBubble.score;
         } else if ability == BubbleAbilityEnum.ScreenClear {
+            // Screen clear: Pops all bubbles on the screen.
             let copyOfBubbles = bubbles;
             copyOfBubbles.forEach { popBubble($0, isBeingPoppedByAbility: true) };
         }
@@ -158,6 +163,7 @@ class GameViewModel: ObservableObject {
             }
         }
         
+        // Remove all bubbles that are out of bounds.
         bubbles.removeAll(where: { checkBubbleOutOfBounds($0) })
     }
     
@@ -190,13 +196,11 @@ class GameViewModel: ObservableObject {
         }
         
         // Generate a random number of bubbles within the remaining limit or limited by the number of free positions, whichever is least.
-        var numberToGenerate = Int.random(in: 1...(maxNumberOfBubbles - currentNumberOfBubbles));
-        
-        // TODO: Consider moving this further up the chain so we don't need to generate every second.
         let screenWidth = UIScreen.main.bounds.width;
         let screenHeight = UIScreen.main.bounds.height;
         let minimumDistance = max(GameHelper.BUBBLE_SIZE, (screenWidth * screenHeight) / CGFloat(maxNumberOfBubbles * 200));
         
+        var numberToGenerate = Int.random(in: 1...(maxNumberOfBubbles - currentNumberOfBubbles));
         var poissonDiskPositions = generatePoissonDiskSamples(numberToGenerate, screenWidth, screenHeight, minimumDistance);
         numberToGenerate = min(numberToGenerate, poissonDiskPositions.count);
         
@@ -254,7 +258,7 @@ class GameViewModel: ObservableObject {
     }
     
     private func generateRandomBubble(position: CGPoint) -> Bubble {
-        // Generate a bubble with random velocity and type.
+        // Generate a bubble with random velocity, type and ability.
         let randomVelocity: CGPoint = CGPoint(
             x: CGFloat.random(in: -2...2),
             y: CGFloat.random(in: -2...2)
@@ -272,10 +276,10 @@ class GameViewModel: ObservableObject {
         
         // EF 4 - Generate a special bubble type / ability
         let bubbleAbilities = [
-            (BubbleAbilityEnum.None, 85),
-            (BubbleAbilityEnum.Bomb, 7),
-            (BubbleAbilityEnum.Mimic, 6),
-            (BubbleAbilityEnum.ScreenClear, 2)
+            (BubbleAbilityEnum.None, 90),
+            (BubbleAbilityEnum.Bomb, 5),
+            (BubbleAbilityEnum.Mimic, 4),
+            (BubbleAbilityEnum.ScreenClear, 1)
         ];
         let weightedBubbleAbilities = bubbleAbilities.flatMap { bubble in Array(repeating: bubble.0, count: bubble.1) };
         let randomBubbleAbility = weightedBubbleAbilities.randomElement() ?? .None;

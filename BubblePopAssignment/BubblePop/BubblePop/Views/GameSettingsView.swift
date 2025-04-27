@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GameSettingsView: View {
-    @EnvironmentObject var navigationManager: NavigationManager;
-    @EnvironmentObject var viewModel: GameSettingsViewModel;
+    @EnvironmentObject private var navigationManager: NavigationManager;
+    @EnvironmentObject private var viewModel: GameSettingsViewModel;
     
     var body: some View {
         VStack {

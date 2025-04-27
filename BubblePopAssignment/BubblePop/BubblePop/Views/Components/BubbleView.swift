@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BubbleView: View {
-    @State private var isPopped: Bool = false;
+    @State var isPopped: Bool = false;
     @Binding var bubble: Bubble;
     @StateObject var gameViewModel: GameViewModel;
     
@@ -82,33 +82,28 @@ struct BubbleView: View {
                     )
             )
         
-        // TODO: This disgusts me.
-        let bubbleAbilityOverlay = bubbleAbilityImageName != "" ? AnyView(Image(bubbleAbilityImageName).resizable().scaledToFit().frame(width: 15, height: 15).offset(x: -10, y: -10).position(x: bubble.position.x, y: bubble.position.y)) : AnyView(EmptyView());
-        
-        ZStack {
-            Circle()
-                .fill(.white.opacity(0.8))
-                .frame(width: 15, height: 15)
-                .offset(x: -10, y: -10)
-                .position(
-                    x: bubble.position.x,
-                    y: bubble.position.y
-                )
-                .overlay {
-                    if bubbleAbilityImageName != "" {
-                        Image(bubbleAbilityImageName)
-                            .resizable()
-                            .scaledToFit()
-                            .clipShape(Circle())
-                            .frame(width: 15, height: 15)
-                            .offset(x: -10, y: -10)
-                            .position(
-                                x: bubble.position.x,
-                                y: bubble.position.y
-                            )
-                    }
+        Circle()
+            .fill(.white.opacity(0.8))
+            .frame(width: 15, height: 15)
+            .offset(x: -10, y: -10)
+            .position(
+                x: bubble.position.x,
+                y: bubble.position.y
+            )
+            .overlay {
+                if bubbleAbilityImageName != "" {
+                    Image(bubbleAbilityImageName)
+                        .resizable()
+                        .scaledToFit()
+                        .clipShape(Circle())
+                        .frame(width: 15, height: 15)
+                        .offset(x: -10, y: -10)
+                        .position(
+                            x: bubble.position.x,
+                            y: bubble.position.y
+                        )
                 }
-        }
+            }
     }
 }
 

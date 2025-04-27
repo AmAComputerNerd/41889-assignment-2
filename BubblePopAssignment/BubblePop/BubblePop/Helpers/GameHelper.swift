@@ -44,6 +44,7 @@ class GameHelper {
     static func updatePlayerLeaderboardEntry(playerName: String, score: Int) -> PlayerLeaderboardEntry? {
         var leaderboard = getLeaderboard();
         if let existingRecord = leaderboard.first(where: { $0.playerName == playerName }) {
+            // If there is already a record, we should only update the record if the newest score is higher.
             if score <= existingRecord.score {
                 return nil;
             }

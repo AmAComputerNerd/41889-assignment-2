@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GameView: View {
-    @EnvironmentObject var navigationManager: NavigationManager
-    @EnvironmentObject var gameSettings: GameSettingsViewModel
+    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var gameSettings: GameSettingsViewModel
     @StateObject var viewModel: GameViewModel = GameViewModel();
     
     var body: some View {

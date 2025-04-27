@@ -23,7 +23,6 @@ struct Bubble: Identifiable, Equatable {
         self.position = position;
         self.velocity = velocity;
         
-        // TODO: Fix this ugly code
         switch(type) {
         case .Red: self.colour = .red; self.score = 1;
         case .Pink: self.colour = Color(hex: "e983d8"); self.score = 2;

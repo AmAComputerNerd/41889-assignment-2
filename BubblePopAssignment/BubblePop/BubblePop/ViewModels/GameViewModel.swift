@@ -72,6 +72,7 @@ class GameViewModel: ObservableObject {
         gameTimer?.invalidate();
         bubbleRefreshTimer?.invalidate();
         bubbleMovementTimer?.invalidate();
+        bubbleMimicColourChangeTimer?.invalidate();
     }
     
     func clearData() {

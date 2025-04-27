@@ -9,11 +9,13 @@ import SwiftUI
 
 @main
 struct BubblePopApp: App {
-    @StateObject private var gameSettings = GameSettingsViewModel()
+    @StateObject private var navigationManager: NavigationManager = NavigationManager();
+    @StateObject private var gameSettings: GameSettingsViewModel = GameSettingsViewModel();
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(navigationManager)
                 .environmentObject(gameSettings)
         }
     }

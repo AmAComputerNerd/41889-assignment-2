@@ -18,4 +18,10 @@ class GameSettingsViewModel: ObservableObject {
     var maxBubblesOnScreen: Int {
         Int(maxBubblesOnScreenInternal)
     }
+    
+    func resetSettings() {
+        playerName = "Player1";
+        gameTimerInternal = 60;
+        maxBubblesOnScreenInternal = 15;
+    }
 }

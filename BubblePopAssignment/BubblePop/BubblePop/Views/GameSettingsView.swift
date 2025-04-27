@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct GameSettingsView: View {
-    @EnvironmentObject var viewModel: GameSettingsViewModel
+    @EnvironmentObject var navigationManager: NavigationManager;
+    @EnvironmentObject var viewModel: GameSettingsViewModel;
     
     var body: some View {
         VStack {
@@ -24,7 +25,10 @@ struct GameSettingsView: View {
             Text("Max bubble count: \(viewModel.maxBubblesOnScreen) bubbles")
             Slider(value: $viewModel.maxBubblesOnScreenInternal, in: 10...30)
             
-            StyledNavigationLink(destination: GameView(), label: "Begin")
+            Button("Begin") {
+                navigationManager.navigate(to: GameView.self);
+            }
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
@@ -33,4 +37,5 @@ struct GameSettingsView: View {
 #Preview {
     GameSettingsView()
         .environmentObject(GameSettingsViewModel())
+        .environmentObject(NavigationManager())
 }

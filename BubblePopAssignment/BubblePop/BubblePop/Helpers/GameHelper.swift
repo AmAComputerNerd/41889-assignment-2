@@ -22,11 +22,46 @@ class GameHelper {
     }
     
     static func isValidPoint(_ point: CGPoint, inScreenWidth width: CGFloat, inScreenHeight height: CGFloat) -> Bool {
+        // TODO: Must fix this logic up properly rather than this bandaid fix.
         let radius = BUBBLE_SIZE;
         return point.x >= radius && point.x <= width - radius && point.y >= radius && point.y <= height - radius * 2;
     }
     
     static func distance(_ p1: CGPoint, _ p2: CGPoint) -> CGFloat {
         return hypot(p1.x - p2.x, p1.y - p2.y);
+    }
+    
+    // Leaderboard functions
+    static func getLeaderboard() -> [PlayerLeaderboardEntry] {
+        if let savedData = UserDefaults.standard.data(forKey: "leaderboard") {
+            if let decodedData = try? JSONDecoder().decode([PlayerLeaderboardEntry].self, from: savedData) {
+                return decodedData.sorted(by: { $0.score > $1.score });
+            }
+        }
+        return [];
+    }
+    
+    static func updatePlayerLeaderboardEntry(playerName: String, score: Int) -> PlayerLeaderboardEntry? {
+        var leaderboard = getLeaderboard();
+        if let existingRecord = leaderboard.first(where: { $0.playerName == playerName }) {
+            if score <= existingRecord.score {
+                return nil;
+            }
+            leaderboard.remove(at: leaderboard.firstIndex(of: existingRecord)!);
+        }
+        
+        let now = Date.now;
+        let entry = PlayerLeaderboardEntry(playerName: playerName, score: score, timestamp: now);
+        leaderboard.append(entry);
+        
+        if let encodedData = try? JSONEncoder().encode(leaderboard) {
+            UserDefaults.standard.set(encodedData, forKey: "leaderboard");
+            return entry;
+        }
+        return nil;
+    }
+    
+    static func clearLeaderboard() {
+        UserDefaults.standard.removeObject(forKey: "leaderboard");
     }
 }

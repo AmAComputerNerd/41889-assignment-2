@@ -9,27 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
+        // TODO: NavigationController view.
         NavigationStack {
             VStack {
                 Label("Bubble Pop", systemImage: "").foregroundStyle(.mint).font(.largeTitle)
                 
                 Spacer()
                 
-//                NavigationLink(destination: GameSettingsView()) {
-//                    
-//                    Button("New Game") {}
-//                        .buttonStyle(.borderedProminent)
-//                    
-//                }
-                
                 StyledNavigationLink(destination: GameSettingsView(), label: "New Game")
-                
-//                NavigationLink(destination: HighScoreView()) {
-//                    
-//                    Button("High Score") {}
-//                        .buttonStyle(.borderedProminent)
-//                    
-//                }
                 
                 StyledNavigationLink(destination: HighScoreView(), label: "High Score")
                 

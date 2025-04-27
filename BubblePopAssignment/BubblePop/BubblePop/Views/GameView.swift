@@ -21,19 +21,13 @@ struct GameView: View {
             // Game Info (Layer 2)
             VStack {
                 Text("Score: \(viewModel.score) | Time left: \(viewModel.timerDuration)")
-                
-                Spacer()
-                
-                Text("Player name: \(gameSettings.playerName)")
-                Text("Timer: \(gameSettings.gameTimer)")
-                Text("Max bubbles: \(gameSettings.maxBubblesOnScreen)")
-                
                 Spacer()
             }
             // TODO: Fix warning.
             NavigationLink(
-                destination: GameEndView(score: viewModel.score),
-                isActive: $viewModel.isGameOver) {
+                destination: GameEndView(playerName: gameSettings.playerName, score: viewModel.score),
+                isActive: $viewModel.isGameOver
+            ) {
                 EmptyView()
             }
             .hidden()

@@ -12,9 +12,17 @@ struct ContentView: View {
     @EnvironmentObject private var viewModel: NavigationManager;
     
     var body: some View {
-        viewModel.currentView
+        let view = viewModel.currentView
             .environmentObject(gameSettings)
-            .environmentObject(viewModel)
+            .environmentObject(viewModel);
+        
+        if viewModel.supportsNavigation {
+            NavigationView() {
+                view
+            }
+        } else {
+            view
+        }
     }
 }
 

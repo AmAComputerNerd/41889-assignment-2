@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct GameEndView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var gameSettings: GameSettingsViewModel
     @StateObject var viewModel: GameEndViewModel;
     
     init(playerName: String, score: Int) {
@@ -26,10 +28,16 @@ struct GameEndView: View {
         
         LeaderboardView(leaderboardEntries: viewModel.leaderboard)
         
-        StyledNavigationLink(destination: ContentView(), label: "Continue")
+        Button("Continue") {
+            gameSettings.resetSettings();
+            navigationManager.navigate(to: HomeView.self, supportsNavigation: true)
+        }
+        .buttonStyle(.borderedProminent)
     }
 }
 
 #Preview {
     GameEndView(playerName: "Preview", score: 69)
+        .environmentObject(NavigationManager())
+        .environmentObject(GameSettingsViewModel())
 }

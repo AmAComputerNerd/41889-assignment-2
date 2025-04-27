@@ -10,6 +10,7 @@ import SwiftUI
 
 class NavigationManager: ObservableObject {
     @Published var currentView: AnyView = AnyView(HomeView());
+    @Published var supportsNavigation: Bool = true;
     
     // ViewFactories for views with a default constructor.
     private let viewFactories: [String: () -> AnyView] = [
@@ -19,13 +20,15 @@ class NavigationManager: ObservableObject {
         Reflection.getClassName(type: HighScoreView.self): { AnyView(HighScoreView()) }
     ]
     
-    func navigate(to: String? = nil, withParams: (() -> AnyView)? = nil) {
+    func navigate(to: Any.Type? = nil, withParams: (() -> AnyView)? = nil, supportsNavigation: Bool = false) {
+        self.supportsNavigation = supportsNavigation;
         // If Navigation is provided with a closure:
         if let factory = withParams {
             currentView = factory();
             return;
         // Otherwise, if navigation is provided with a name:
-        } else if let viewName = to {
+        } else if let viewType = to {
+            let viewName = Reflection.getClassName(type: viewType);
             if let genericViewFactory = viewFactories[viewName] {
                 currentView = genericViewFactory();
                 return;

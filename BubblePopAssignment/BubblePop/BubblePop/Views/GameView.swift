@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GameView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var gameSettings: GameSettingsViewModel
     @StateObject var viewModel: GameViewModel = GameViewModel();
     
@@ -23,14 +24,6 @@ struct GameView: View {
                 Text("Score: \(viewModel.score) | Time left: \(viewModel.timerDuration)")
                 Spacer()
             }
-            // TODO: Fix warning.
-            NavigationLink(
-                destination: GameEndView(playerName: gameSettings.playerName, score: viewModel.score),
-                isActive: $viewModel.isGameOver
-            ) {
-                EmptyView()
-            }
-            .hidden()
         }
         .onAppear {
             viewModel.startTimers(gameSettings);
@@ -39,10 +32,16 @@ struct GameView: View {
             viewModel.stopTimers();
             viewModel.clearData();
         }
+        .onChange(of: viewModel.isGameOver) {
+            if viewModel.isGameOver {
+                navigationManager.navigate(withParams: { AnyView(GameEndView(playerName: gameSettings.playerName, score: viewModel.score)) })
+            }
+        }
     }
 }
 
 #Preview {
     GameView()
+        .environmentObject(NavigationManager())
         .environmentObject(GameSettingsViewModel())
 }

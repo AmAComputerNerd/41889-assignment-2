@@ -24,8 +24,4 @@ class GameEndViewModel: ObservableObject {
         
         self.isHighScore = score == leaderboardEntry?.score;
     }
-    
-    func navigateHome() {
-        
-    }
 }

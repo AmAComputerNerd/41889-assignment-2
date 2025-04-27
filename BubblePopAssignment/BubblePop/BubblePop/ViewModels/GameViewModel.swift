@@ -85,6 +85,7 @@ class GameViewModel: ObservableObject {
     
     private func moveBubblesAndUpdateVelocity(_ totalTimerLength: Int) {
         for i in 0..<bubbles.count {
+            // Calculate true velocity
             let bubble = bubbles[i];
             let timeRatio = CGFloat(1 + ((totalTimerLength - timerDuration) / totalTimerLength));
             let trueVelocity = CGPoint(
@@ -92,6 +93,7 @@ class GameViewModel: ObservableObject {
                 y: bubble.velocity.y * timeRatio
             );
             
+            // Update position / reverse velocity if new position would result in overlap.
             if (!checkBubbleOverlap(bubble, trueVelocity)) {
                 bubbles[i].position = CGPoint(
                     x: bubble.position.x + trueVelocity.x,
@@ -104,6 +106,7 @@ class GameViewModel: ObservableObject {
                 );
             }
             
+            // Roll chance to update velocity.
             let chanceToUpdateVelocity = Int.random(in: 0..<100);
             if chanceToUpdateVelocity < 10 {
                 let velocityXChange = CGFloat.random(in: -0.5...0.5);
@@ -114,6 +117,8 @@ class GameViewModel: ObservableObject {
                 );
             }
         }
+        
+        bubbles.removeAll(where: { checkBubbleOutOfBounds($0) })
     }
     
     private func checkBubbleOverlap(_ bubble: Bubble, _ velocity: CGPoint) -> Bool {
@@ -122,12 +127,19 @@ class GameViewModel: ObservableObject {
             y: bubble.position.y + velocity.y
         );
         
-        if !GameHelper.isValidPoint(newBubblePosition, inScreenWidth: UIScreen.main.bounds.width, inScreenHeight: UIScreen.main.bounds.height) {
-            return true;
-        }
-        
         let bubblesWithinRange = bubbles.filter({ $0.id != bubble.id && GameHelper.distance(newBubblePosition, $0.position) < GameHelper.BUBBLE_SIZE });
         return !bubblesWithinRange.isEmpty;
+    }
+    
+    private func checkBubbleOutOfBounds(_ bubble: Bubble) -> Bool {
+        let bubbleRadius = GameHelper.BUBBLE_SIZE / 2;
+        let screenWidth = UIScreen.main.bounds.width;
+        let screenHeight = UIScreen.main.bounds.height;
+        
+        return bubble.position.x + bubbleRadius < 0 ||
+                bubble.position.x - bubbleRadius > screenWidth ||
+                bubble.position.y + bubbleRadius < 0 ||
+                bubble.position.y - bubbleRadius > screenHeight;
     }
     
     private func generateBubbles(_ maxNumberOfBubbles: Int) {

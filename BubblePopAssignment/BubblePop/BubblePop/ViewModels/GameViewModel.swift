@@ -63,7 +63,7 @@ class GameViewModel: ObservableObject {
             // Ensure weak reference to self remains.
             guard let self = self else { return };
             
-            let mimicBubbles = bubbles.filter { $0.ability == BubbleAbilityEnum.Mimic };
+            let mimicBubbles = self.bubbles.filter { $0.ability == BubbleAbilityEnum.Mimic };
             mimicBubbles.forEach { self.applyBubbleAbility($0) }
         }
     }

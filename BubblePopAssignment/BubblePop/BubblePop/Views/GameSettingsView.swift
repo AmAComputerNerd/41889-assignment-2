@@ -13,6 +13,10 @@ struct GameSettingsView: View {
     
     var body: some View {
         VStack {
+            Text("Game Settings")
+                .foregroundStyle(.mint)
+                .font(.largeTitle)
+            Spacer()
             Text("Enter your name:");
             TextField("", text: $viewModel.playerName)
                 .textFieldStyle(.roundedBorder)
@@ -29,6 +33,7 @@ struct GameSettingsView: View {
                 navigationManager.navigate(to: GameView.self);
             }
             .buttonStyle(.borderedProminent)
+            Spacer()
         }
         .padding()
     }

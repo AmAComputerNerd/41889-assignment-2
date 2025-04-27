@@ -19,6 +19,7 @@ class GameViewModel: ObservableObject {
     private var gameTimer: Timer?;
     private var bubbleRefreshTimer: Timer?;
     private var bubbleMovementTimer: Timer?;
+    private var bubbleMimicColourChangeTimer: Timer?
     
     func startTimers(_ gameSettings: GameSettingsViewModel) {
         let leaderboard = GameHelper.getLeaderboard();
@@ -56,6 +57,15 @@ class GameViewModel: ObservableObject {
                 self.moveBubblesAndUpdateVelocity(gameSettings.gameTimer);
             }
         }
+        
+        // BubbleMimicColourChangeTimer - changes the colour of mimic bubbles.
+        bubbleMimicColourChangeTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            // Ensure weak reference to self remains.
+            guard let self = self else { return };
+            
+            let mimicBubbles = bubbles.filter { $0.ability == BubbleAbilityEnum.Mimic };
+            mimicBubbles.forEach { self.applyBubbleAbility($0) }
+        }
     }
     
     func stopTimers() {
@@ -71,7 +81,11 @@ class GameViewModel: ObservableObject {
         lastBubbleTypePopped = nil;
     }
     
-    func popBubble(_ bubbleToPop: Bubble) {
+    func popBubble(_ bubbleToPop: Bubble, isBeingPoppedByAbility: Bool = false) {
+        if !isBeingPoppedByAbility {
+            applyBubbleAbility(bubbleToPop);
+        }
+        
         var score = Double(bubbleToPop.score);
         if lastBubbleTypePopped == bubbleToPop.type {
             // Apply score multiplier for one or more bubbles of the same colour popped in a row.
@@ -80,7 +94,27 @@ class GameViewModel: ObservableObject {
         
         self.score += Int(score);
         lastBubbleTypePopped = bubbleToPop.type;
-        bubbles.removeAll { $0 == bubbleToPop };
+        bubbles.removeAll { $0.id == bubbleToPop.id };
+    }
+    
+    private func applyBubbleAbility(_ bubble: Bubble) {
+        let ability = bubble.ability;
+        if ability == BubbleAbilityEnum.Bomb {
+            let explosionRadius: CGFloat = GameHelper.BUBBLE_SIZE * 1.5;
+            let bubblesInRange = bubbles.filter {
+                $0.id != bubble.id &&
+                GameHelper.distance(bubble.position, $0.position) < explosionRadius
+            };
+            bubblesInRange.forEach { popBubble($0, isBeingPoppedByAbility: true) };
+        } else if ability == BubbleAbilityEnum.Mimic {
+            let indexOfBubble = bubbles.firstIndex(of: bubble)!;
+            // This is a dirty way of doing this, but reduces duplicated code.
+            let tempBubble = generateRandomBubble(position: CGPoint.zero);
+            bubbles[indexOfBubble].colour = tempBubble.colour;
+        } else if ability == BubbleAbilityEnum.ScreenClear {
+            let copyOfBubbles = bubbles;
+            copyOfBubbles.forEach { popBubble($0, isBeingPoppedByAbility: true) };
+        }
     }
     
     private func endGame(_ playerName: String) {
@@ -236,7 +270,17 @@ class GameViewModel: ObservableObject {
         let weightedBubbleTypes = bubbleTypes.flatMap { bubble in Array(repeating: bubble.0, count: bubble.1) };
         let randomBubbleType = weightedBubbleTypes.randomElement() ?? .Red;
         
-        let bubble = Bubble(type: randomBubbleType, position: position, velocity: randomVelocity);
+        // EF 4 - Generate a special bubble type / ability
+        let bubbleAbilities = [
+            (BubbleAbilityEnum.None, 85),
+            (BubbleAbilityEnum.Bomb, 7),
+            (BubbleAbilityEnum.Mimic, 6),
+            (BubbleAbilityEnum.ScreenClear, 2)
+        ];
+        let weightedBubbleAbilities = bubbleAbilities.flatMap { bubble in Array(repeating: bubble.0, count: bubble.1) };
+        let randomBubbleAbility = weightedBubbleAbilities.randomElement() ?? .None;
+        
+        let bubble = Bubble(type: randomBubbleType, ability: randomBubbleAbility, position: position, velocity: randomVelocity);
         return bubble;
     }
 }

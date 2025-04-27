@@ -18,12 +18,11 @@ struct GameSettingsView: View {
                 .multilineTextAlignment(.center)
                 .padding()
             
-            Text("Timer duration: \(Int(viewModel.gameTimer)) seconds")
-            // TODO: No more Stepper, go back to Slider and do it right this time.
-            Stepper("", value: $viewModel.gameTimer, in: 30...240)
+            Text("Timer duration: \(viewModel.gameTimer) seconds")
+            Slider(value: $viewModel.gameTimerInternal, in: 30...120)
             
-            Text("Max bubble count: \(Int(viewModel.maxBubblesOnScreen)) bubbles")
-            Stepper("", value: $viewModel.maxBubblesOnScreen, in: 10...30)
+            Text("Max bubble count: \(viewModel.maxBubblesOnScreen) bubbles")
+            Slider(value: $viewModel.maxBubblesOnScreenInternal, in: 10...30)
             
             StyledNavigationLink(destination: GameView(), label: "Begin")
         }

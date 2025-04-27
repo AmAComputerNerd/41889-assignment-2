@@ -21,13 +21,6 @@ struct GameView: View {
             // Game Info (Layer 2)
             VStack {
                 Text("Score: \(viewModel.score) | Time left: \(viewModel.timerDuration)")
-                
-                Spacer()
-                
-                Text("Player name: \(gameSettings.playerName)")
-                Text("Timer: \(gameSettings.gameTimer)")
-                Text("Max bubbles: \(gameSettings.maxBubblesOnScreen)")
-                
                 Spacer()
             }
             // TODO: Fix warning.

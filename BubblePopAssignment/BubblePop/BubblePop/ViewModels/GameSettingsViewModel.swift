@@ -9,6 +9,13 @@ import Foundation
 
 class GameSettingsViewModel: ObservableObject {
     @Published var playerName: String = "Player1";
-    @Published var gameTimer: Int = 60;
-    @Published var maxBubblesOnScreen: Int = 15;
+    @Published var gameTimerInternal: Double = 60;
+    @Published var maxBubblesOnScreenInternal: Double = 15;
+    
+    var gameTimer: Int {
+        Int(gameTimerInternal)
+    }
+    var maxBubblesOnScreen: Int {
+        Int(maxBubblesOnScreenInternal)
+    }
 }

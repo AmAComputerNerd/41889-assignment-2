@@ -87,7 +87,7 @@ class GameViewModel: ObservableObject {
         for i in 0..<bubbles.count {
             // Calculate true velocity
             let bubble = bubbles[i];
-            let timeRatio = CGFloat(1 + ((totalTimerLength - timerDuration) / totalTimerLength));
+            let timeRatio = 1 + ((CGFloat(totalTimerLength) - CGFloat(timerDuration)) / CGFloat(totalTimerLength));
             let trueVelocity = CGPoint(
                 x: bubble.velocity.x * timeRatio,
                 y: bubble.velocity.y * timeRatio

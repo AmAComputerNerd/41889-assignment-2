@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 
 class GameViewModel: ObservableObject {
+    @Published var highestScore: Int = 0;
     @Published var score: Int = 0;
     @Published var bubbles: [Bubble] = [];
     @Published var timerDuration: Int = 0;
@@ -20,6 +21,11 @@ class GameViewModel: ObservableObject {
     private var bubbleMovementTimer: Timer?;
     
     func startTimers(_ gameSettings: GameSettingsViewModel) {
+        let leaderboard = GameHelper.getLeaderboard();
+        if (leaderboard.count > 0) {
+            // Leaderboard is sorted by score, descending, so the first element is always the high score.
+            highestScore = leaderboard[0].score;
+        }
         timerDuration = gameSettings.gameTimer;
         
         // GameTimer - countdown before game ends.

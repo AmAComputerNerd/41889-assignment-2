@@ -21,7 +21,8 @@ struct GameView: View {
             
             // Game Info (Layer 2)
             VStack {
-                Text("Score: \(viewModel.score) | Time left: \(viewModel.timerDuration)")
+                Text("Time left: \(viewModel.timerDuration)")
+                Text("Score: \(viewModel.score) | High score to beat: \(viewModel.highestScore)")
                 Spacer()
             }
         }

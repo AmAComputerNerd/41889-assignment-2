@@ -18,8 +18,9 @@ struct GameEndView: View {
     
     var body: some View {
         Text("Game Over!")
+            .font(.title)
         if viewModel.isHighScore {
-            Text("New high score!")
+            Text("New personal high score!")
                 .font(.headline)
                 .foregroundStyle(.green)
         }

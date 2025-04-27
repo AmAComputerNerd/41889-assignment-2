@@ -36,8 +36,10 @@ struct BubbleView: View {
             )
             .onTapGesture {
                 withAnimation {
-                    isPopped = true;
-                    gameViewModel.popBubble(bubble)
+                    if (!isPopped) {
+                        isPopped = true;
+                        gameViewModel.popBubble(bubble)
+                    }
                 }
             }
             .overlay(

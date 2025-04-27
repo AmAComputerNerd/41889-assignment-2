@@ -22,6 +22,7 @@ class GameHelper {
     }
     
     static func isValidPoint(_ point: CGPoint, inScreenWidth width: CGFloat, inScreenHeight height: CGFloat) -> Bool {
+        // TODO: Must fix this logic up properly rather than this bandaid fix.
         let radius = BUBBLE_SIZE;
         return point.x >= radius && point.x <= width - radius && point.y >= radius && point.y <= height - radius * 2;
     }

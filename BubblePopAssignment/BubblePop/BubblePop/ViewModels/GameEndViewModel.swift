@@ -9,14 +9,23 @@ import Foundation
 
 class GameEndViewModel: ObservableObject {
     @Published var score: Int;
+    @Published var isHighScore: Bool;
     @Published var highlightedLeaderboardEntry: PlayerLeaderboardEntry?;
     @Published var leaderboard: [PlayerLeaderboardEntry];
     
     init(_ playerName: String, _ score: Int) {
         self.score = score;
-        self.leaderboard = GameHelper.getLeaderboard();
         
-        let leaderboardEntry = self.leaderboard.first(where: { $0.playerName == playerName });
+        let leaderboard = GameHelper.getLeaderboard();
+        self.leaderboard = leaderboard
+        
+        let leaderboardEntry = leaderboard.first(where: { $0.playerName == playerName });
         self.highlightedLeaderboardEntry = leaderboardEntry;
+        
+        self.isHighScore = score == leaderboardEntry?.score;
+    }
+    
+    func navigateHome() {
+        
     }
 }

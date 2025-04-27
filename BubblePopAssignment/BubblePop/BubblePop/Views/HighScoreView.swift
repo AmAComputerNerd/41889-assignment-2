@@ -8,8 +8,23 @@
 import SwiftUI
 
 struct HighScoreView: View {
+    @StateObject var viewModel: HighScoreViewModel = HighScoreViewModel();
+    
     var body: some View {
-        Text("High Score")
+        HStack {
+            Button("Refresh leaderboard") {
+                viewModel.refreshLeaderboard();
+            }
+            .buttonStyle(.borderedProminent)
+            Button("Clear leaderboard") {
+                viewModel.clearLeaderboard();
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        
+        Spacer()
+        LeaderboardView(leaderboardEntries: viewModel.leaderboard)
+        Spacer()
     }
 }
 

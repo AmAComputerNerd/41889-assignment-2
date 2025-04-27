@@ -16,9 +16,17 @@ struct GameEndView: View {
     
     var body: some View {
         Text("Game Over!")
-        Text("Your high score is: \(viewModel.highlightedLeaderboardEntry?.score ?? -1)")
+        if viewModel.isHighScore {
+            Text("New high score!")
+                .font(.headline)
+                .foregroundStyle(.green)
+        }
         Text("Your score: \(viewModel.score)")
-        Text("There are \(viewModel.leaderboard.count) leaderboard entries.")
+        Text("Your high score: \(viewModel.highlightedLeaderboardEntry?.score ?? -1)")
+        
+        LeaderboardView(leaderboardEntries: viewModel.leaderboard)
+        
+        StyledNavigationLink(destination: ContentView(), label: "Continue")
     }
 }
 
